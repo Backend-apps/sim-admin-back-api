@@ -27,28 +27,28 @@ export class StatisticService {
 
       let statistics = {};
 
-      packages?.forEach((pack: any) => {
-        const orderDate = new Date(pack.order_date);
-        const month = orderDate.toLocaleString('default', { month: 'long' });
-        const week = Math.ceil(orderDate.getDate() / 7);
-        const day = orderDate.toLocaleString('default', { weekday: 'long' });
+    packages?.forEach((pack: any) => {
+      const orderDate = new Date(pack.order_date);
+      const month = orderDate.toLocaleString('default', { month: 'long' });
+      const week = Math.ceil(orderDate.getDate() / 7);
+      const day = orderDate.toLocaleString('default', { weekday: 'long' });
 
-        if (!statistics[month]) {
-          statistics[month] = { total: 0, weeks: {}, days: {} };
-        }
-        statistics[month].total++;
+      if (!statistics[month]) {
+        statistics[month] = { total: 0, week1: [], week2: [], week3: [], week4: [] };
+      }
+      statistics[month].total++;
 
-        if (!statistics[month].weeks[week]) {
-          statistics[month].weeks[week] = 0;
-        }
-        statistics[month].weeks[week]++;
-
-        if (!statistics[month].days[day]) {
-          statistics[month].days[day] = 0;
-        }
-        statistics[month].days[day]++;
-      });
-
+      const weekData = { [day]: 1 ,"date":`${orderDate.getDay()} - ${month}`};
+      if (week === 1) {
+        statistics[month].week1.push(weekData);
+      } else if (week === 2) {
+        statistics[month].week2.push(weekData);
+      } else if (week === 3) {
+        statistics[month].week3.push(weekData);
+      } else if (week === 4) {
+        statistics[month].week4.push(weekData);
+      }
+    });
       return statistics;
     } catch (error) {
       throw error;
