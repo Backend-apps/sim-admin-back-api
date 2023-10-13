@@ -20,6 +20,41 @@ export class StatisticService {
     }
   }
 
+  async getMonthWeekDay(): Promise<any> {
+    try {
+      const data = await this.statisticRepository.query(GET_ALL, []);
+      const packages = data[0].get_all_package_counter_month;
+
+      let statistics = {};
+
+      packages?.forEach((pack: any) => {
+        const orderDate = new Date(pack.order_date);
+        const month = orderDate.toLocaleString('default', { month: 'long' });
+        const week = Math.ceil(orderDate.getDate() / 7);
+        const day = orderDate.toLocaleString('default', { weekday: 'long' });
+
+        if (!statistics[month]) {
+          statistics[month] = { total: 0, weeks: {}, days: {} };
+        }
+        statistics[month].total++;
+
+        if (!statistics[month].weeks[week]) {
+          statistics[month].weeks[week] = 0;
+        }
+        statistics[month].weeks[week]++;
+
+        if (!statistics[month].days[day]) {
+          statistics[month].days[day] = 0;
+        }
+        statistics[month].days[day]++;
+      });
+
+      return statistics;
+    } catch (error) {
+      throw error;
+    }
+  }
+
   async getAllChart(): Promise<any> {
     try {
       const data = await this.statisticRepository.query(GET_ALL, []);
@@ -27,7 +62,7 @@ export class StatisticService {
       let moonths = [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0];
       for (let i = 0; i < orders.length; i++) {
         const monthId = orders[i].month_id;
-        console.log(monthId)
+        console.log(monthId);
         switch (monthId) {
           case 1:
             moonths[0] = orders[i].package_total_count;
@@ -77,12 +112,18 @@ export class StatisticService {
 
   async getAllDevice(): Promise<any> {
     try {
-      let res = await fetch('http://ussd.coreteam.uz:8092/api/v1/device/get/all');
+      let res = await fetch(
+        'http://ussd.coreteam.uz:8092/api/v1/device/get/all',
+      );
       const { data } = await res.json();
       if (data) {
         return {
-          ios: data?.filter((el: any) => el?.model === 'iPhone').length,
-          android: data?.filter((el: any) => el?.model !== 'iPhone').length,
+          ios: data?.filter(
+            (el: any) => el?.model === 'iPhone' || el?.model === 'iPad',
+          ).length,
+          android: data?.filter(
+            (el: any) => el?.model !== 'iPhone' || el?.model !== 'iPhone',
+          ).length,
         };
       } else {
         return 'something went to wrong';

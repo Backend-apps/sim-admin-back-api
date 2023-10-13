@@ -14,6 +14,16 @@ export class StatisticController {
     }
   }
 
+
+  @Get('/table')
+  async getMonthWeekDay(){
+    try {
+      return this.statisticService.getMonthWeekDay()
+    } catch (error) {
+      return error
+    }
+  }
+  
   @Get('/devices')
   async getDevices(): Promise<any> {
     try {
