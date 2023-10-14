@@ -26,29 +26,44 @@ export class StatisticService {
       const packages = data[0].get_all_package_counter_month;
 
       let statistics = {};
+      let month_id = 0;
+      packages?.forEach((pack: any) => {
+        const orderDate = new Date(pack.order_date);
+        const month = orderDate.toLocaleString('default', { month: 'long' });
+        const week = Math.ceil(orderDate.getDate() / 7);
+        const day = orderDate.toLocaleString('default', { weekday: 'long' });
 
-    packages?.forEach((pack: any) => {
-      const orderDate = new Date(pack.order_date);
-      const month = orderDate.toLocaleString('default', { month: 'long' });
-      const week = Math.ceil(orderDate.getDate() / 7);
-      const day = orderDate.toLocaleString('default', { weekday: 'long' });
+        month_id++
+       
 
-      if (!statistics[month]) {
-        statistics[month] = { total: 0, week1: [], week2: [], week3: [], week4: [] };
-      }
-      statistics[month].total++;
-
-      const weekData = { [day]: 1 ,"date":`${orderDate.getDay()} - ${month}`};
-      if (week === 1) {
-        statistics[month].week1.push(weekData);
-      } else if (week === 2) {
-        statistics[month].week2.push(weekData);
-      } else if (week === 3) {
-        statistics[month].week3.push(weekData);
-      } else if (week === 4) {
-        statistics[month].week4.push(weekData);
-      }
-    });
+        if (!statistics[month]) {
+          statistics[month] = {
+            total: 0,
+            week1: [],
+            week2: [],
+            week3: [],
+            week4: [],
+            month_id,
+            
+          };
+        }
+        statistics[month].total++;
+        statistics[month].month_id
+        const weekData = { [day]: 1, date: `${orderDate.getDay()} - ${month}` };
+        if (week === 1) {
+          weekData.week_id = 1
+          statistics[month].week1.push(weekData);
+        } else if (week === 2) {
+          weekData.week_id = 2
+          statistics[month].week2.push(weekData);
+        } else if (week === 3) {
+          weekData.week_id = 3
+          statistics[month].week3.push(weekData);
+        } else if (week === 4) {
+          weekData.week_id = 4
+          statistics[month].week4.push(weekData);
+        }
+      });
       return statistics;
     } catch (error) {
       throw error;
