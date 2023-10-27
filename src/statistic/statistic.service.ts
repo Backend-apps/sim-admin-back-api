@@ -28,13 +28,13 @@ export class StatisticService {
       let statistics = {};
       let month_id = 0;
       packages?.forEach((pack: any) => {
+        console.log(pack);
         const orderDate = new Date(pack.order_date);
         const month = orderDate.toLocaleString('default', { month: 'long' });
         const week = Math.ceil(orderDate.getDate() / 7);
         const day = orderDate.toLocaleString('default', { weekday: 'long' });
 
-        month_id++
-       
+        month_id++;
 
         if (!statistics[month]) {
           statistics[month] = {
@@ -44,23 +44,27 @@ export class StatisticService {
             week3: [],
             week4: [],
             month_id,
-            
           };
         }
         statistics[month].total++;
-        statistics[month].month_id
-        const weekData = { [day]: 1, date: `${orderDate.getDay()} - ${month}` };
+        statistics[month].month_id;
+        const weekData = {
+          [day]: 1,
+          date: `${orderDate.getDay()} - ${month}`,
+          device: pack.device_id,
+          name: pack.device_name,
+        };
         if (week === 1) {
-          weekData.week_id = 1
+          weekData.week_id = 1;
           statistics[month].week1.push(weekData);
         } else if (week === 2) {
-          weekData.week_id = 2
+          weekData.week_id = 2;
           statistics[month].week2.push(weekData);
         } else if (week === 3) {
-          weekData.week_id = 3
+          weekData.week_id = 3;
           statistics[month].week3.push(weekData);
         } else if (week === 4) {
-          weekData.week_id = 4
+          weekData.week_id = 4;
           statistics[month].week4.push(weekData);
         }
       });
