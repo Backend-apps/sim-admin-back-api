@@ -28,16 +28,14 @@ export class PackagesController {
     }
   }
 
-
   @Get('/category')
-  async getAllTariffCategory():Promise<Package>{
+  async getAllTariffCategory(): Promise<Package> {
     try {
-      return await this.packageService.getAllPackageCategory()
+      return await this.packageService.getAllPackageCategory();
     } catch (error) {
-      return error
+      return error;
     }
   }
-
 
   @Get('/:packageId')
   async getOne(@Param('packageId') packageId: number): Promise<Package> {
@@ -48,7 +46,6 @@ export class PackagesController {
     }
   }
 
-  
   @Post('/add')
   async createPackage(
     @Body() data: Package,
@@ -71,7 +68,7 @@ export class PackagesController {
     @Body() data: Package,
     @Param('packageId') packageId: number,
     @Headers('authorization') authorizationHeader: string,
-  ): Promise<Package> {
+  ): Promise<Package | object> {
     try {
       const [bearer, token] = authorizationHeader.split(' ');
 

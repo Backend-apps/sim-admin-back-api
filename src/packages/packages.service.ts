@@ -51,16 +51,22 @@ export class PackagesService {
     }
   }
 
-  async editPackage(paket, id, a_id): Promise<Package> {
+  async editPackage(paket, id, a_id): Promise<Package|object> {
     try {
       if (id) {
         const [oldPackage] = await this.packageRepository.query(
           GET_ONE_PACKAGE,
           [id],
         );
+        console.log(oldPackage.get_one_paket)
+        if(oldPackage.get_one_paket===null){
+          return { status:404,message:"data not found",data:null}
+        }
+          
         const editedPackage = {
           admin_id: a_id,
           paket_id: id,
+          count: paket.count ? paket.count : oldPackage.get_one_paket.count,
           package_name: paket.package_name
             ? paket.package_name
             : oldPackage.get_one_paket.package_name,
@@ -83,7 +89,7 @@ export class PackagesService {
           description: paket.description
             ? paket.description
             : oldPackage.get_one_paket.description,
-          sale: paket.sale ? paket.sale : oldPackage.get_one_paket.sale,
+          sale: paket.sale ? paket.sale : oldPackage.get_one_paket.sale | 10,
           status: paket.status ? paket.status : oldPackage.get_one_paket.status,
           type: paket.type ? paket.type : oldPackage.get_one_paket.type,
           internet_type: paket.internet_type
