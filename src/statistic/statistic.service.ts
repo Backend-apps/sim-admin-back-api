@@ -136,17 +136,12 @@ export class StatisticService {
       );
       const { data } = await res.json();
       if (data) {
-        return {
-          ios:
-            data?.filter(
-              (el: any) => el?.model === 'iPhone' || el?.model === 'iPad',
-            ).length - 1,
-          android:
-            data?.filter(
-              (el: any) => el?.model !== 'iPhone' || el?.model !== 'iPhone',
-            ).length - 1,
-          all: data.length - 1,
+        const res: { ios: number; android: number; all: number } = {
+          ios: data?.filter((el: any) => el?.model === 'iPhone').length,
+          android: data?.filter((el: any) => el?.model !== 'iPhone').length,
+          all: data.length,
         };
+        return res;
       } else {
         return 'something went to wrong';
       }
