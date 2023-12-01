@@ -137,12 +137,15 @@ export class StatisticService {
       const { data } = await res.json();
       if (data) {
         return {
-          ios: data?.filter(
-            (el: any) => el?.model === 'iPhone' || el?.model === 'iPad',
-          ).length,
-          android: data?.filter(
-            (el: any) => el?.model !== 'iPhone' || el?.model !== 'iPhone',
-          ).length,
+          ios:
+            data?.filter(
+              (el: any) => el?.model === 'iPhone' || el?.model === 'iPad',
+            ).length - 1,
+          android:
+            data?.filter(
+              (el: any) => el?.model !== 'iPhone' || el?.model !== 'iPhone',
+            ).length - 1,
+          all: data.length - 1,
         };
       } else {
         return 'something went to wrong';
@@ -150,5 +153,45 @@ export class StatisticService {
     } catch (error) {
       throw error;
     }
+  }
+
+  async getDeviceChart(): Promise<any> {
+    try {
+      let res = await fetch(
+        'http://ussd.coreteam.uz:8092/api/v1/device/get/all',
+      );
+      const { data } = await res.json();
+      if (data) {
+        return this.sortMonth(data);
+      } else {
+        return 'something went to wrong';
+      }
+    } catch (error) {
+      throw error;
+    }
+  }
+
+  sortMonth(data) {
+    const createdMonthCounts = {};
+    data.forEach((device) => {
+      const createdDate = new Date(device.createdDateTime);
+      const month = createdDate.toLocaleString('uz-UZ', { month: 'numeric' });
+      const year = createdDate.toLocaleString('uz-UZ', { year: 'numeric' });
+      if (!createdMonthCounts[year]) {
+        createdMonthCounts[year] = {
+          year: Number(year),
+          ios: Array(12).fill(0),
+          android: Array(12).fill(0),
+        };
+      }
+      if (device.model === 'iPhone' || device.model === 'iPad') {
+        createdMonthCounts[year].ios[parseInt(month) - 1]++;
+      } else {
+        createdMonthCounts[year].android[parseInt(month) - 1]++;
+      }
+    });
+    const result = Object.values(createdMonthCounts);
+
+    return result;
   }
 }

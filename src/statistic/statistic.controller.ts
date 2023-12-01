@@ -41,4 +41,13 @@ export class StatisticController {
       return error;
     }
   }
+
+  @Get('/charts/device')
+  async getChartsDevice(): Promise<any> {
+    try {
+      return this.statisticService.getDeviceChart();
+    } catch (error) {
+      return error;
+    }
+  }
 }
